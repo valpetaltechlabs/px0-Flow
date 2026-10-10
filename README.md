@@ -8,6 +8,8 @@ Instead of reconstructing a feature from a list of changed files, open the graph
 
 ## See Change Flow
 
+Try the [interactive GitHub Pages demo](https://valpetaltechlabs.github.io/px0-Flow/) to explore a sample change flow in your browser.
+
 This example follows a discount-code change from the UI through the API and service layers to the database. The graph groups changed symbols by layer and labels the connections it inferred. Click the screenshot to open the full-size image.
 
 [![Change Flow graph showing a discount-code path from UI to database](docs/assets/demo-change-flow.png)](docs/assets/demo-change-flow.png)
