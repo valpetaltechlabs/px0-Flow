@@ -29,7 +29,7 @@ import { initPR } from './pr.js';
 import { initLineComment } from './linecomment.js';
 import { initUnpushed, refreshUnpushed } from './unpushed.js';
 import { initPRScope } from './prscope.js';
-import { initFlow } from './flow.js';
+import { initFlow, showFlowIfChanged } from './flow.js';
 
 // Initialize all subsystems
 initRenderer();
@@ -161,6 +161,7 @@ initPRScope();
     await restoreWorkspaceTabs();
     if (hasGitChanges) await selectChangedFileTab();
   }
+  if (!initialPath && hasGitChanges) showFlowIfChanged();
 
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => { measure(); layout(); render(); });
@@ -179,6 +180,7 @@ initPRScope();
           if (!initialPath) {
             hasGitChanges = await applyGitSidebarState();
             if (hasGitChanges) await selectChangedFileTab();
+            if (hasGitChanges) showFlowIfChanged();
           }
         }
       } catch {

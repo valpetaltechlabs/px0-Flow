@@ -155,7 +155,7 @@
         <button data-md="source" title="File source ({Alt+M})">Source</button>
         <button id="btn-copy-md" class="view-switch-copy" data-action="copy-md" title="Copy raw Markdown of this file" aria-label="Copy raw Markdown"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" style="margin-right:3px;vertical-align:-1px;"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 3.5V3a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5"/></svg><span>Copy Markdown</span></button>
       </div>
-      <!-- Modified files in a git repo only: view the file's diff against HEAD -->
+      <!-- Git repos only: the file, its diff against HEAD, or the workspace Change Flow -->
       <div id="diff-switch" class="view-switch diff-dropdown" role="group" aria-label="Diff view" hidden>
         <button id="diff-source" data-diff-opt="source" title="Show the file ({Mod+D})">Source</button>
         <div class="diff-seg">
@@ -183,11 +183,11 @@
           </button>
         </div>
         </div>
+        <button id="btn-flow-view" class="flow-view-button" type="button" title="Open Change Flow ({Mod+Shift+G})">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="3" cy="3" r="1.5"/><circle cx="13" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><path d="M4.5 3.5 11.5 7M4.5 12.5 11.5 9"/></svg>
+          <span>Flow</span>
+        </button>
       </div>
-      <button id="btn-flow-view" class="view-switch flow-view-button" type="button" title="Open Change Flow ({Mod+Shift+G})">
-        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="3" cy="3" r="1.5"/><circle cx="13" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><path d="M4.5 3.5 11.5 7M4.5 12.5 11.5 9"/></svg>
-        <span>Flow</span>
-      </button>
       <!-- Opens the right sidebar; shown only while it is closed -->
       <button id="btn-open-right" class="open-right" title="Open sidebar ({Mod+J})" aria-label="Open right sidebar"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg></button>
     </div>
@@ -202,6 +202,27 @@
       <div id="mdview" hidden><article id="md" class="md"></article></div>
       <!-- Diff view: covers the code view while a diff layout is active (Mod+D toggles) -->
       <div id="diffview" hidden><div id="diffcontent"></div></div>
+      <!-- Change Flow: covers the code view while Flow is selected in the view switch -->
+      <div id="flow-modal" class="flow-overlay" hidden>
+        <section class="flow-dialog" role="region" aria-labelledby="flow-title">
+          <header class="flow-header">
+            <div class="flow-title-wrap"><span class="flow-title-icon">↗</span><div><h2 id="flow-title">Change Flow</h2><p>Trace changed code through the request and data path.</p></div></div>
+            <div class="flow-controls">
+              <label class="flow-scope-label" for="flow-scope">Scope</label>
+              <select id="flow-scope" aria-label="Change flow scope"><option value="working">Working tree</option><option value="pr" hidden>Pull request</option><option value="thread">Thread</option></select>
+              <select id="flow-thread" aria-label="Select thread" hidden></select>
+              <button id="flow-plan" type="button" title="Ask the active harness to plan this thread without editing files">Plan flow</button>
+              <button id="flow-refresh" type="button" title="Refresh change map" aria-label="Refresh change map">↻</button>
+              <button id="flow-close" type="button" title="Close Change Flow (Esc)" aria-label="Close Change Flow">×</button>
+            </div>
+          </header>
+          <div class="flow-body">
+            <div class="flow-message" id="flow-message" hidden></div>
+            <div class="flow-graph" id="flow-graph" aria-live="polite"></div>
+          </div>
+          <footer class="flow-footer"><span id="flow-summary">Working tree changes</span><span><i class="flow-key added"></i>Added <i class="flow-key modified"></i>Modified <i class="flow-key deleted"></i>Deleted <i class="flow-key planned"></i>Planned <i class="flow-key drift"></i>Unplanned</span></footer>
+        </section>
+      </div>
       <!-- Image viewer: covers the code view for an image tab -->
       <div id="imgview" hidden>
         <div id="imgview-viewport">
@@ -539,27 +560,6 @@
 <div id="helpsheet" hidden></div>
 <div id="vim-helpsheet" hidden></div>
 
-<!-- Change Flow graph -->
-<div id="flow-modal" class="flow-overlay" hidden>
-  <section class="flow-dialog" role="dialog" aria-modal="true" aria-labelledby="flow-title">
-    <header class="flow-header">
-      <div class="flow-title-wrap"><span class="flow-title-icon">↗</span><div><h2 id="flow-title">Change Flow</h2><p>Trace changed code through the request and data path.</p></div></div>
-      <div class="flow-controls">
-        <label class="flow-scope-label" for="flow-scope">Scope</label>
-        <select id="flow-scope" aria-label="Change flow scope"><option value="working">Working tree</option><option value="pr" hidden>Pull request</option><option value="thread">Thread</option></select>
-        <select id="flow-thread" aria-label="Select thread" hidden></select>
-        <button id="flow-plan" type="button" title="Ask the active harness to plan this thread without editing files">Plan flow</button>
-        <button id="flow-refresh" type="button" title="Refresh change map" aria-label="Refresh change map">↻</button>
-        <button id="flow-close" type="button" title="Close Change Flow (Esc)" aria-label="Close Change Flow">×</button>
-      </div>
-    </header>
-    <div class="flow-body">
-      <div class="flow-message" id="flow-message" hidden></div>
-      <div class="flow-graph" id="flow-graph" aria-live="polite"></div>
-    </div>
-    <footer class="flow-footer"><span id="flow-summary">Working tree changes</span><span><i class="flow-key added"></i>Added <i class="flow-key modified"></i>Modified <i class="flow-key deleted"></i>Deleted <i class="flow-key planned"></i>Planned <i class="flow-key drift"></i>Unplanned</span></footer>
-  </section>
-</div>
 
 <!-- SECTION: Settings Modal (Cmd+, / Ctrl+,) -->
 <div id="settings-modal" class="modal-overlay" hidden>

@@ -48,8 +48,8 @@ export function updateStatus() {
   const currentLayout = (d && d.diffMode) || layoutPref();
   const dsw = $('#diff-switch');
   if (dsw) {
-    const showSwitch = inGit && isCode;
-    dsw.hidden = !showSwitch;
+    dsw.hidden = !inGit;
+    for (const el of dsw.querySelectorAll('#diff-source, .diff-seg')) el.hidden = !isCode;
     document.body.classList.toggle('diff-tab', hasDiff);
     const btn = $('#diff-btn');
     if (btn) {

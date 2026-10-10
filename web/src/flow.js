@@ -1,6 +1,8 @@
 import { $, S, api, apiPostJson } from './state.js';
 import { openFile } from './tabs.js';
 import { renderMermaidBlocks } from './mermaid.js';
+import { showRightInspector, hideRightInspector } from './inspector.js';
+import { on } from './bus.js';
 
 const modal = $('#flow-modal');
 const graph = $('#flow-graph');
@@ -9,6 +11,7 @@ const scopeSelect = $('#flow-scope');
 const threadSelect = $('#flow-thread');
 let flowSeq = 0;
 let planRunning = false;
+let restoreRightTab; // undefined: leave the right panel alone on close; otherwise the tab to reopen
 
 const statusNames = new Set(['added', 'modified', 'deleted', 'context', 'planned', 'unplanned']);
 const layerNames = { ui: 'UI', api: 'API', service: 'Service', db: 'Database' };
@@ -218,8 +221,13 @@ export async function refreshFlow() {
 }
 
 export function showFlow() {
-  modal.hidden = false;
-  document.body.classList.add('flow-active');
+  if (modal.hidden) {
+    const rightOpen = !document.body.classList.contains('right-hidden');
+    restoreRightTab = rightOpen ? ($('.inspector-tab.active')?.dataset.itab || null) : undefined;
+    modal.hidden = false;
+    document.body.classList.add('flow-active');
+    if (rightOpen) hideRightInspector();
+  }
   scopeSelect.querySelector('option[value="pr"]').hidden = !Boolean(S.meta?.pr);
   if (scopeSelect.value === 'pr' && !S.meta?.pr) scopeSelect.value = 'working';
   const thread = scopeSelect.value === 'thread';
@@ -228,9 +236,28 @@ export function showFlow() {
   refreshFlow();
 }
 
+export function hideFlow() {
+  if (modal.hidden) return;
+  modal.hidden = true;
+  document.body.classList.remove('flow-active');
+  if (restoreRightTab !== undefined) showRightInspector(restoreRightTab || undefined);
+  restoreRightTab = undefined;
+}
+
+export async function showFlowIfChanged() {
+  try {
+    const data = await api('/api/flow', { scope: 'working' });
+    if (data.nodes?.length && modal.hidden) showFlow();
+  } catch {}
+}
+
 export function initFlow() {
   $('#btn-flow-view')?.addEventListener('click', showFlow);
-  $('#flow-close')?.addEventListener('click', () => { modal.hidden = true; document.body.classList.remove('flow-active'); });
+  $('#flow-close')?.addEventListener('click', hideFlow);
+  $('#diff-source')?.addEventListener('click', hideFlow);
+  $('#diff-btn')?.addEventListener('click', hideFlow);
+  for (const item of document.querySelectorAll('#diff-menu .diff-menu-item')) item.addEventListener('click', hideFlow);
+  on('tab:activated', hideFlow);
   $('#flow-refresh')?.addEventListener('click', refreshFlow);
   scopeSelect.addEventListener('change', async () => {
     const thread = scopeSelect.value === 'thread';
@@ -240,13 +267,11 @@ export function initFlow() {
     refreshFlow();
   });
   threadSelect.addEventListener('change', refreshFlow);
-  modal.addEventListener('click', event => { if (event.target === modal) { modal.hidden = true; document.body.classList.remove('flow-active'); } });
   $('#flow-plan')?.addEventListener('click', planFlow);
   addEventListener('keydown', event => {
     if (event.key === 'Escape' && !modal.hidden) {
       event.stopImmediatePropagation();
-      modal.hidden = true;
-      document.body.classList.remove('flow-active');
+      hideFlow();
     }
   });
   $('#flow-plan').hidden = scopeSelect.value !== 'thread';
