@@ -2,6 +2,10 @@
 
 Change Flow turns code changes into a navigable request path. Open it with **Flow** in the editor toolbar, `Cmd/Ctrl+Shift+G`, or **View: Change Flow** in the command palette.
 
+## Open from any repository
+
+Run `make git-px0-flow` once from the px0-flow checkout. It installs a global git alias, so `git px0-flow` inside any repository rebuilds px0-flow from that checkout and opens Change Flow on the repository's changes. Flags are passed through, for example `git px0-flow -port 0` or `git px0-flow -agent claude`. The alias always runs with `-no-update`, because the self-updater downloads upstream px0 and would replace the px0-flow build. Remove it with `git config --global --unset alias.px0-flow`.
+
 ## Scopes
 
 - **Working tree** — staged, unstaged, and untracked changes compared with `HEAD`.

@@ -15,7 +15,7 @@ This directory provides comprehensive documentation for all px0 user-facing feat
 | **Symbol Outline** | `Cmd/Ctrl+Shift+O` | In-file function, class, and struct hierarchy with regex fallback | [Symbol Outline](symbol-outline.md) |
 | **In-File Find & Caret** | `Cmd/Ctrl+F`, `Cmd/Ctrl+G` | Active document search, minimap match markers, and line jumps | [In-File Search](in-file-search.md) |
 | **Git Awareness, Diffs & Stage/Commit/Push/Pull** | `Cmd/Ctrl+D` | Real-time status stream, stat cache fast-path, split / unified diffs, a sidebar panel to stage/commit/push/fast-forward-pull, and AI-written commit messages | [Git Integration](git-integration.md) |
-| **Change Flow** | `Cmd/Ctrl+Shift+G` | Map changed symbols from working tree, PR, or agent thread through inferred UI, API, service, and database relationships | [Change Flow](change-flow.md) |
+| **Change Flow** | `Cmd/Ctrl+Shift+G`, `git px0-flow` | Map changed symbols from working tree, PR, or agent thread through inferred UI, API, service, and database relationships; `git px0-flow` rebuilds and opens it in any repo | [Change Flow](change-flow.md) |
 | **GitHub PR Review** | `px0 <pr-url>`, `Alt+R` | Full-tree checkout of a pull request, merge-base diffing, draft comments with Approve / Request Changes / Comment, and committing/pushing/pulling straight from the checkout | [GitHub PR Review](github-pr-review.md) |
 | **Coding Agent Editing** | `Alt+E`, Right-click | Delegating edits to Claude Code, Gemini CLI, Cursor Agent, and more | [Agent Editing](agent-editing.md) |
 | **Threads** | `Alt+T` | Long-running, multi-turn conversations with your coding harness that can read and change any file, with per-turn changed files | [Threads](threads.md) |

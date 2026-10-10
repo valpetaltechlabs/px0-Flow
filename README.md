@@ -29,6 +29,7 @@ Change Flow (`Cmd/Ctrl+Shift+G`) tracing a discount-code change from the UI thro
 - Unpushed commit review: Read the commits your branch is ahead of its tracking branch by, one file diff at a time, before you push them. See [Git integration](docs/features/git-integration.md).
 - Call trails: See who calls a function and what it calls, expanding one level at a time, from the **Calls** tab in the right sidebar (powered by the language server's call hierarchy).
 - `make flow-demo WORKSPACE=/path/to/repo`: Build and open Change Flow for any repository in one command.
+- `git px0-flow`: Run `make git-px0-flow` once to install a global git alias. After that, `git px0-flow` inside any repository rebuilds px0-flow from this checkout and opens Change Flow on that repository's changes. Remove it with `git config --global --unset alias.px0-flow`. See [Change Flow](docs/features/change-flow.md#open-from-any-repository).
 
 ## Features
 
@@ -41,6 +42,17 @@ Inherited from upstream px0:
 - Virtual rendering: Opens 400,000-line files smoothly by mounting only visible rows; frees memory back to the OS after 15 seconds of inactivity.
 - Rich code viewer: 14 built-in themes, rendered Markdown with Mermaid diagrams, CSV/TSV table view, image inspector, and optional zero-config LSP for Go-to-Definition and hover.
 
+## Roadmap
+
+Planned px0-flow features, not yet built:
+
+- Accurate code flow visualization:
+  - Build call edges from the language server's call hierarchy instead of name matching.
+  - Draw edges the language server confirmed as solid lines and guessed ones as dotted lines.
+  - Scope matching to each function's body, so a name that appears elsewhere in the file doesn't create an edge.
+  - Refine the graph automatically once the language server finishes starting.
+- Readable large graphs: filter by layer (UI, API, service, database), collapse nodes by file, focus on one symbol and its neighbours, and show a node's diff in a side panel without leaving Flow.
+- Multi-repository workspaces: open several repositories in one px0-flow session and trace a change across them, such as a frontend repo calling an API repo that writes to a shared schema repo.
 ## License
 
 [MIT License](LICENSE). px0 © Arpit Bhayani. px0-flow modifications © ValPetal Tech Labs.

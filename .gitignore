@@ -26,3 +26,6 @@ web/vendor/*.min.js.gz
 # Logs
 *.log
 px0
+
+# CI workflows (need a token with workflow scope to push)
+.github/workflows/

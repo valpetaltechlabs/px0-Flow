@@ -1,4 +1,4 @@
-.PHONY: all build web test dist publish clean help flow-demo
+.PHONY: all build web test dist publish clean help flow-demo git-px0-flow
 
 VERSION ?= $(shell cat VERSION 2>/dev/null | tr -d ' \r\n')
 # Support 'make publish 0.2.0' where target argument is passed as next goal
@@ -27,6 +27,7 @@ help:
 	@echo "px0 make targets:"
 	@echo "  make build             - build px0 binary for current platform (optional: POSTHOG_KEY=phc_...)"
 	@echo "  make flow-demo WORKSPACE=/path/to/repo - build px0 and open Change Flow for a workspace"
+	@echo "  make git-px0-flow      - install global 'git px0-flow' alias: rebuild and open Change Flow in any repo"
 	@echo "  make web               - bundle web assets (JS/CSS/themes)"
 	@echo "  make test              - run go test suite"
 	@echo "  make test-short        - run fast unit tests (short mode)"
@@ -49,6 +50,11 @@ flow-demo:
 	@if [ ! -d "$(WORKSPACE)" ]; then echo "Workspace directory not found: $(WORKSPACE)"; exit 2; fi
 	$(MAKE) build
 	./px0 "$(WORKSPACE)"
+
+# -no-update: the self-updater pulls upstream px0 and would overwrite this px0-flow build.
+git-px0-flow:
+	git config --global alias.px0-flow '!f() { make -s -C "$(CURDIR)" build >/dev/null && "$(CURDIR)/px0" -no-update "$$@" .; }; f'
+	@echo "Installed 'git px0-flow'. Run it inside any repo. Remove with: git config --global --unset alias.px0-flow"
 
 test: web
 	go test -v .
